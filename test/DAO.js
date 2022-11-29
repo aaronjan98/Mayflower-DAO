@@ -174,4 +174,38 @@ describe('DAO', () => {
       })
     })
   })
+
+  describe('Governance', () => {
+    let transaction, result
+
+    describe('Success', async () => {
+      beforeEach(async () => {
+        // Create Proposal
+        transaction = await dao
+          .connect(investor1)
+          .createProposal('Proposal 1', ether(100), recipient.address)
+        result = await transaction.wait()
+
+        // Vote
+        transaction = await dao.connect(investor1).vote(1)
+        result = await transaction.wait()
+
+        transaction = await dao.connect(investor2).vote(1)
+        result = await transaction.wait()
+
+        transaction = await dao.connect(investor3).vote(1)
+        result = await transaction.wait()
+
+        // Finalize proposal
+        transaction = await dao.connect(investor1).finalizeProposal(1)
+        result = await transaction.wait()
+      })
+
+      it('updates the proposal to finalized', async () => {
+        const proposal = await dao.proposals(1)
+        expect(proposal.finalized).to.equal(true)
+      })
+    })
+    describe('Failure', async () => {})
+  })
 })

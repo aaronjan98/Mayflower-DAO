@@ -7,7 +7,11 @@ import './Token.sol';
 contract DAO {
     address owner;
     Token public token;
+
     uint256 public quorum;
+    uint256 public proposalCount;
+    mapping(uint256 => Proposal) public proposals;
+    mapping(address => mapping(uint256 => bool)) votes;
 
     struct Proposal {
         uint256 id;
@@ -17,10 +21,6 @@ contract DAO {
         uint256 votes;
         bool finalized;
     }
-
-    uint256 public proposalCount;
-    mapping(uint256 => Proposal) public proposals;
-    mapping(address => mapping(uint256 => bool)) votes;
 
     event Propose(uint id, uint256 amount, address recipient, address creator);
     event Vote(uint256 id, address investor);
@@ -63,6 +63,7 @@ contract DAO {
         emit Propose(proposalCount, _amount, _recipient, msg.sender);
     }
 
+    // Vote on Proposal
     function vote(uint256 _id) external onlyInvestor {
         // Fetch proposal from mapping
         Proposal storage proposal = proposals[_id];
@@ -77,5 +78,20 @@ contract DAO {
         votes[msg.sender][_id] = true;
 
         emit Vote(_id, msg.sender);
+    }
+
+    // Finalize proposal & transfer funds
+    function finalizeProposal(uint256 _id) external onlyInvestor {
+        // Fetch proposal from mapping
+        Proposal storage proposal = proposals[_id];
+
+        // Mark proposal as finalized
+        proposal.finalized = true;
+
+        // Check that proposal has enough votes
+
+        // Transfer the funds
+
+        // Emit event
     }
 }
