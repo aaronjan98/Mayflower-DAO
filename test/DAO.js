@@ -201,6 +201,12 @@ describe('DAO', () => {
         result = await transaction.wait()
       })
 
+      it('transfers funds to recipient', async () => {
+        expect(await ethers.provider.getBalance(recipient.address)).to.equal(
+          tokens(10100)
+        )
+      })
+
       it('updates the proposal to finalized', async () => {
         const proposal = await dao.proposals(1)
         expect(proposal.finalized).to.equal(true)

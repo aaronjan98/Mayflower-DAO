@@ -96,6 +96,7 @@ contract DAO {
         );
 
         // Transfer the funds
+        proposal.recipient.transfer(proposal.amount);
 
         // Emit event
     }
