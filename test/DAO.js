@@ -59,6 +59,14 @@ describe('DAO', () => {
       it('updates proposal count', async () => {
         expect(await dao.proposalCount()).to.equal(1)
       })
+
+      it('updates proposal mapping', async () => {
+        const proposal = await dao.proposals(1)
+
+        expect(proposal.id).to.equal(1)
+        expect(proposal.amount).to.equal(ether(100))
+        expect(proposal.recipient).to.equal(recipient.address)
+      })
     })
     describe('Failure', async () => {})
   })
