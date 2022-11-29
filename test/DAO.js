@@ -156,15 +156,15 @@ describe('DAO', () => {
       })
     })
     describe('Failure', async () => {
-      // it('rejects invalid amount', async () => {
-      //   await expect(
-      //     dao
-      //       .connect(investor1)
-      //       .createProposal('Proposal 1', ether(1000), recipient.address)
-      //   ).to.be.reverted
-      // })
       it('rejects non-investor', async () => {
         await expect(dao.connect(nonDAOuser).vote(1)).to.be.reverted
+      })
+
+      it('rejects double voting', async () => {
+        transaction = await dao.connect(investor1).vote(1)
+        result = await transaction.wait()
+
+        await expect(dao.connect(investor1).vote(1)).to.be.reverted
       })
     })
   })
