@@ -32,7 +32,7 @@ contract DAO {
     receive() external payable {}
 
     modifier onlyInvestor() {
-        require(Token(token).balanceOf(msg.sender) > 0, 'must be token holder');
+        require(token.balanceOf(msg.sender) > 0, 'must be token holder');
         _;
     }
 
@@ -59,5 +59,13 @@ contract DAO {
         );
 
         emit Propose(proposalCount, _amount, _recipient, msg.sender);
+    }
+
+    function vote(uint256 _id) external onlyInvestor {
+        // Fetch proposal from mapping
+        Proposal storage proposal = proposals[_id];
+
+        // update votes
+        proposal.votes += token.balanceOf(msg.sender);
     }
 }

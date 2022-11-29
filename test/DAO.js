@@ -129,7 +129,42 @@ describe('DAO', () => {
           dao
             .connect(nonDAOuser)
             .createProposal('Proposal 1', ether(100), recipient.address)
-        )
+        ).to.be.reverted
+      })
+    })
+  })
+
+  describe('Voting', () => {
+    let transaction, result
+
+    beforeEach(async () => {
+      transaction = await dao
+        .connect(investor1)
+        .createProposal('Proposal 1', ether(100), recipient.address)
+      result = await transaction.wait()
+    })
+
+    describe('Success', async () => {
+      beforeEach(async () => {
+        transaction = await dao.connect(investor1).vote(1)
+        result = await transaction.wait()
+      })
+
+      it('updates vote count', async () => {
+        const proposal = await dao.proposals(1)
+        expect(proposal.votes).to.equal(tokens(200000))
+      })
+    })
+    describe('Failure', async () => {
+      // it('rejects invalid amount', async () => {
+      //   await expect(
+      //     dao
+      //       .connect(investor1)
+      //       .createProposal('Proposal 1', ether(1000), recipient.address)
+      //   ).to.be.reverted
+      // })
+      it('rejects non-investor', async () => {
+        await expect(dao.connect(nonDAOuser).vote(1)).to.be.reverted
       })
     })
   })
