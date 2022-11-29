@@ -74,6 +74,14 @@ describe('DAO', () => {
           .withArgs(1, ether(100), recipient.address, investor1.address)
       })
     })
-    describe('Failure', async () => {})
+    describe('Failure', async () => {
+      it('rejects invalid amount', async () => {
+        await expect(
+          dao
+            .connect(investor1)
+            .createProposal('Proposal 1', ether(1000), recipient.address)
+        ).to.be.reverted
+      })
+    })
   })
 })

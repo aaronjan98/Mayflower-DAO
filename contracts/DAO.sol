@@ -36,6 +36,8 @@ contract DAO {
         uint256 _amount,
         address payable _recipient
     ) external {
+        require(address(this).balance >= _amount);
+
         proposalCount++;
 
         // Create Proposal
