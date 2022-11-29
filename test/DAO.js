@@ -206,6 +206,33 @@ describe('DAO', () => {
         expect(proposal.finalized).to.equal(true)
       })
     })
-    describe('Failure', async () => {})
+    describe('Failure', async () => {
+      beforeEach(async () => {
+        // Create Proposal
+        transaction = await dao
+          .connect(investor1)
+          .createProposal('Proposal 1', ether(100), recipient.address)
+        result = await transaction.wait()
+
+        // Vote
+        transaction = await dao.connect(investor1).vote(1)
+        result = await transaction.wait()
+
+        transaction = await dao.connect(investor2).vote(1)
+        result = await transaction.wait()
+      })
+
+      it('rejects proposal if already finalized', async () => {
+        // Vote 3
+        transaction = await dao.connect(investor3).vote(1)
+        result = await transaction.wait()
+
+        // Finalize
+        transaction = await dao.connect(investor1).finalizeProposal(1)
+        result = await transaction.wait()
+
+        await expect(dao.connect(investor1).finalizeProposal(1)).to.be.reverted
+      })
+    })
   })
 })
