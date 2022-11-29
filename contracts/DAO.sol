@@ -96,7 +96,8 @@ contract DAO {
         );
 
         // Transfer the funds
-        proposal.recipient.transfer(proposal.amount);
+        (bool sent, ) = proposal.recipient.call{ value: proposal.amount }('');
+        require(sent);
 
         // Emit event
     }
