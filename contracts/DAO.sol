@@ -90,7 +90,10 @@ contract DAO {
         // Mark proposal as finalized
         proposal.finalized = true;
 
-        // Check that proposal has enough votes
+        require(
+            proposal.votes >= quorum,
+            'must reach quorum to finalize proposal'
+        );
 
         // Transfer the funds
 

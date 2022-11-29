@@ -222,6 +222,10 @@ describe('DAO', () => {
         result = await transaction.wait()
       })
 
+      it('rejects finalization if not enough votes', async () => {
+        await expect(dao.connect(investor1).finalizeProposal(1)).to.be.reverted
+      })
+
       it('rejects proposal if already finalized', async () => {
         // Vote 3
         transaction = await dao.connect(investor3).vote(1)
