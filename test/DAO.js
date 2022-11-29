@@ -67,6 +67,12 @@ describe('DAO', () => {
         expect(proposal.amount).to.equal(ether(100))
         expect(proposal.recipient).to.equal(recipient.address)
       })
+
+      it('emits a propose event', async () => {
+        await expect(transaction)
+          .to.emit(dao, 'Propose')
+          .withArgs(1, ether(100), recipient.address, investor1.address)
+      })
     })
     describe('Failure', async () => {})
   })
