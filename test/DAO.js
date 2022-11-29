@@ -211,7 +211,12 @@ describe('DAO', () => {
         const proposal = await dao.proposals(1)
         expect(proposal.finalized).to.equal(true)
       })
+
+      it('emits a Finalized event', async () => {
+        await expect(transaction).to.emit(dao, 'Finalize').withArgs(1)
+      })
     })
+
     describe('Failure', async () => {
       beforeEach(async () => {
         // Create Proposal
@@ -230,6 +235,14 @@ describe('DAO', () => {
 
       it('rejects finalization if not enough votes', async () => {
         await expect(dao.connect(investor1).finalizeProposal(1)).to.be.reverted
+      })
+
+      it('rejects finalization from a non-investor', async () => {
+        // Vote 3
+        transaction = await dao.connect(investor3).vote(1)
+        result = await transaction.wait()
+
+        await expect(dao.connect(nonDAOuser).finalizeProposal(1)).to.be.reverted
       })
 
       it('rejects proposal if already finalized', async () => {
