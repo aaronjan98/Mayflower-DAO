@@ -36,7 +36,12 @@ contract DAO {
         uint256 _amount,
         address payable _recipient
     ) external {
-        require(address(this).balance >= _amount);
+        require(
+            address(this).balance >= _amount,
+            'DAO must have enough funds for the proposal'
+        );
+
+        require(Token(token).balanceOf(msg.sender) > 0, 'must be token holder');
 
         proposalCount++;
 
