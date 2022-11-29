@@ -154,6 +154,12 @@ describe('DAO', () => {
         const proposal = await dao.proposals(1)
         expect(proposal.votes).to.equal(tokens(200000))
       })
+
+      it('emits vote event', async () => {
+        await expect(transaction)
+          .to.emit(dao, 'Vote')
+          .withArgs(1, investor1.address)
+      })
     })
     describe('Failure', async () => {
       it('rejects non-investor', async () => {
