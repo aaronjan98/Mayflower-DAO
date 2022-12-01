@@ -1,10 +1,10 @@
 {
   "1337": {
     "token": {
-      "address": "0xE8B72Fb0Fb991f3DAd86B3b061F864fad6A5996e"
+      "address": "0xe8b72fb0fb991f3dad86b3b061f864fad6a5996e"
     },
     "dao": {
-      "address": "0xD353d9a0D941Fb1d8868da0E5027842baFb87285"
+      "address": "0xd353d9a0d941fb1d8868da0e5027842bafb87285"
     }
   }
 }
