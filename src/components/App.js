@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 
 // Components
 import Navigation from './Navigation'
+import Proposals from './Proposals.js'
 import Loading from './Loading'
 
 // ABIs: Import your contract ABIs here
@@ -19,7 +20,7 @@ function App() {
 
   const [account, setAccount] = useState(null)
 
-  const [proposal, setProposals] = useState(null)
+  const [proposals, setProposals] = useState(null)
   const [quorum, setQuorum] = useState(null)
 
   const [isLoading, setIsLoading] = useState(true)
@@ -90,6 +91,13 @@ function App() {
             {treasuryBalance} ETH
           </p>
           <hr />
+          <Proposals
+            provider={provider}
+            dao={dao}
+            proposals={proposals}
+            quorum={quorum}
+            setIsLoading={setIsLoading}
+          />
         </>
       )}
     </Container>
