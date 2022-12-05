@@ -4,7 +4,8 @@ import { ethers } from 'ethers'
 
 // Components
 import Navigation from './Navigation'
-import Proposals from './Proposals.js'
+import Create from './Create'
+import Proposals from './Proposals'
 import Loading from './Loading'
 
 // ABIs: Import your contract ABIs here
@@ -85,12 +86,17 @@ function App() {
         <Loading />
       ) : (
         <>
+          <Create provider={provider} dao={dao} setIsLoading={setIsLoading} />
+
           <hr />
+
           <p className="text-center">
             <strong>Treasury Balance: </strong>
             {treasuryBalance} ETH
           </p>
+
           <hr />
+
           <Proposals
             provider={provider}
             dao={dao}
