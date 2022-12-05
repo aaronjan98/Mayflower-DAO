@@ -3,6 +3,18 @@ import Button from 'react-bootstrap/Button'
 import { ethers } from 'ethers'
 
 const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
+  const voteHandler = async id => {
+    try {
+      const signer = await provider.getSigner()
+      const transaction = await dao.connect(signer).vote(id)
+      await transaction.wait()
+    } catch {
+      window.alert('User rejected or transaction reverted')
+    }
+
+    setIsLoading(true)
+  }
+
   return (
     <Table striped bordered hover responsive>
       <thead>
@@ -23,16 +35,26 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             <td>{proposal.id.toString()}</td>
             <td>{proposal.name}</td>
             <td>{proposal.recipient}</td>
-            <td>{proposal.amount.toString()}</td>
-            <td>{proposal.finalized}</td>
+            <td>{ethers.utils.formatEther(proposal.amount)} ETH</td>
+            <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{proposal.votes.toString()}</td>
             <td>
-              <Button>Vote</Button>
+              {!proposal.finalized && (
+                <Button
+                  variant="primary"
+                  style={{ width: '100%' }}
+                  onClick={() => voteHandler(proposal.id)}
+                >
+                  Vote
+                </Button>
+              )}
             </td>
             <td>
-              <td>
-                <Button>Finalize</Button>
-              </td>
+              {!proposal.finalized && proposal.votes > quorum && (
+                <Button variant="primary" style={{ width: '100%' }}>
+                  Finalize
+                </Button>
+              )}
             </td>
           </tr>
         ))}
