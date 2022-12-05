@@ -15,6 +15,18 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
     setIsLoading(true)
   }
 
+  const finalizeHandler = async id => {
+    try {
+      const signer = await provider.getSigner()
+      const transaction = await dao.connect(signer).finalizeProposal(id)
+      await transaction.wait()
+    } catch {
+      window.alert('User rejected or transaction reverted')
+    }
+
+    setIsLoading(true)
+  }
+
   return (
     <Table striped bordered hover responsive>
       <thead>
@@ -39,7 +51,7 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{proposal.votes.toString()}</td>
             <td>
-              {!proposal.finalized && (
+              {!proposal.finalized && proposal.votes < quorum && (
                 <Button
                   variant="primary"
                   style={{ width: '100%' }}
@@ -51,7 +63,11 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             </td>
             <td>
               {!proposal.finalized && proposal.votes > quorum && (
-                <Button variant="primary" style={{ width: '100%' }}>
+                <Button
+                  variant="primary"
+                  style={{ width: '100%' }}
+                  onClick={() => finalizeHandler(proposal.id)}
+                >
                   Finalize
                 </Button>
               )}
