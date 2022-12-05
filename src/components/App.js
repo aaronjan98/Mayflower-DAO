@@ -14,9 +14,13 @@ import config from '../config.json'
 
 function App() {
   const [provider, setProvider] = useState(null)
-  const [account, setAccount] = useState(null)
   const [dao, setDao] = useState(null)
   const [treasuryBalance, setTreasuryBalance] = useState(0)
+
+  const [account, setAccount] = useState(null)
+
+  const [proposal, setProposals] = useState(null)
+  const [quorum, setQuorum] = useState(null)
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -46,6 +50,20 @@ function App() {
     })
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
+
+    // Fetch proposals count
+    const count = await dao.proposalCount()
+    const items = []
+
+    for (let i = 0; i < count; i++) {
+      const proposal = await dao.proposals(i + 1)
+      items.push(proposal)
+    }
+
+    setProposals(items)
+
+    // Fetch quorum
+    setQuorum(await dao.quorum())
 
     setIsLoading(false)
   }
