@@ -155,12 +155,23 @@ describe('DAO', () => {
         expect(proposal.votes).to.equal(tokens(200000))
       })
 
+      it('down votes proposals', async () => {
+        transaction = await dao.connect(investor2).vote(1, false)
+        await transaction.wait()
+        transaction = await dao.connect(investor3).vote(1, false)
+        await transaction.wait()
+
+        const proposal = await dao.proposals(1)
+        expect(proposal.votes).to.equal(tokens(-200000))
+      })
+
       it('emits vote event', async () => {
         await expect(transaction)
           .to.emit(dao, 'Vote')
           .withArgs(1, investor1.address)
       })
     })
+
     describe('Failure', async () => {
       it('rejects non-investor', async () => {
         await expect(dao.connect(nonDAOuser).vote(1, true)).to.be.reverted

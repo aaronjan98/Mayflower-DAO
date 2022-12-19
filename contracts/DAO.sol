@@ -23,7 +23,7 @@ contract DAO {
         string name;
         uint256 amount;
         address payable recipient;
-        uint256 votes;
+        int256 votes;
         bool finalized;
     }
 
@@ -79,11 +79,11 @@ contract DAO {
 
         // update votes and track that users have voted
         if (approve) {
-            proposal.votes += token.balanceOf(msg.sender);
+            proposal.votes += int(token.balanceOf(msg.sender));
             votes[msg.sender][_id].voted = true;
             votes[msg.sender][_id].approve = true;
         } else {
-            proposal.votes -= token.balanceOf(msg.sender);
+            proposal.votes -= int(token.balanceOf(msg.sender));
             votes[msg.sender][_id].voted = true;
             votes[msg.sender][_id].approve = false;
         }
@@ -102,7 +102,7 @@ contract DAO {
         proposal.finalized = true;
 
         require(
-            proposal.votes >= quorum,
+            proposal.votes >= int256(quorum),
             'must reach quorum to finalize proposal'
         );
 
