@@ -11,7 +11,12 @@ contract DAO {
     uint256 public quorum;
     uint256 public proposalCount;
     mapping(uint256 => Proposal) public proposals;
-    mapping(address => mapping(uint256 => bool)) votes;
+    mapping(address => mapping(uint256 => VoteStatus)) votes;
+
+    struct VoteStatus {
+        bool voted;
+        bool approve;
+    }
 
     struct Proposal {
         uint256 id;
@@ -65,18 +70,23 @@ contract DAO {
     }
 
     // Vote on Proposal
-    function vote(uint256 _id) external onlyInvestor {
+    function vote(uint256 _id, bool approve) external onlyInvestor {
         // Fetch proposal from mapping
         Proposal storage proposal = proposals[_id];
 
         // Don't let investors vote twice
-        require(!votes[msg.sender][_id], 'already voted');
+        require(!votes[msg.sender][_id].voted, 'already voted');
 
-        // update votes
-        proposal.votes += token.balanceOf(msg.sender);
-
-        // Track that users have voted
-        votes[msg.sender][_id] = true;
+        // update votes and track that users have voted
+        if (approve) {
+            proposal.votes += token.balanceOf(msg.sender);
+            votes[msg.sender][_id].voted = true;
+            votes[msg.sender][_id].approve = true;
+        } else {
+            proposal.votes -= token.balanceOf(msg.sender);
+            votes[msg.sender][_id].voted = true;
+            votes[msg.sender][_id].approve = false;
+        }
 
         emit Vote(_id, msg.sender);
     }
