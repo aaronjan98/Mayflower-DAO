@@ -86,6 +86,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "_description",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "_amount",
         "type": "uint256"
@@ -148,6 +153,11 @@
         "type": "string"
       },
       {
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -158,9 +168,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
+        "internalType": "int256",
         "name": "votes",
-        "type": "uint256"
+        "type": "int256"
       },
       {
         "internalType": "bool",
@@ -203,6 +213,11 @@
         "internalType": "uint256",
         "name": "_id",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "approve",
+        "type": "bool"
       }
     ],
     "name": "vote",

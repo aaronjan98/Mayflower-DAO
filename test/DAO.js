@@ -118,7 +118,7 @@ describe('DAO', () => {
       it('has a proprosal description', async () => {
         const proposal = await dao.proposals(1)
 
-        expect(proposal.description).to.equal('Proposal 1 descriptions')
+        expect(proposal.description).to.equal('Proposal 1 description')
       })
 
       it('emits a propose event', async () => {
