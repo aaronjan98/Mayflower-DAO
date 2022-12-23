@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Container } from 'react-bootstrap'
 import { ethers } from 'ethers'
+import { format, bignumber } from 'mathjs'
 
 // Components
 import Navigation from './Navigation'
@@ -89,12 +90,20 @@ function App() {
           <Create provider={provider} dao={dao} setIsLoading={setIsLoading} />
 
           <hr />
-
           <p className="text-center">
             <strong>Treasury Balance: </strong>
             {treasuryBalance} ETH
           </p>
 
+          <p className="text-center">
+            <strong>Quorum: </strong>
+            {ethers.utils.commify(quorum.toString())} (
+            {format(bignumber(quorum.toString()), {
+              notation: 'exponential',
+              precision: 1,
+            })}
+            )
+          </p>
           <hr />
 
           <Proposals
