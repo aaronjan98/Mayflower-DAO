@@ -21,6 +21,7 @@ contract DAO {
     struct Proposal {
         uint256 id;
         string name;
+        string description;
         uint256 amount;
         address payable recipient;
         int256 votes;
@@ -46,12 +47,18 @@ contract DAO {
 
     function createProposal(
         string memory _name,
+        string memory _description,
         uint256 _amount,
         address payable _recipient
     ) external onlyInvestor {
         require(
             address(this).balance >= _amount,
             'DAO must have enough funds for the proposal'
+        );
+        require(
+            keccak256(abi.encodePacked(_description)) !=
+                keccak256(abi.encodePacked('')),
+            'A description is required for proposal creation'
         );
 
         proposalCount++;
@@ -60,6 +67,7 @@ contract DAO {
         proposals[proposalCount] = Proposal(
             proposalCount,
             _name,
+            _description,
             _amount,
             _recipient,
             0,

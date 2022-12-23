@@ -21,6 +21,7 @@ describe('DAO', () => {
 
   beforeEach(async () => {
     // Set up accounts
+    let transaction
     let accounts = await ethers.getSigners()
     deployer = accounts[0]
     funder = accounts[1]
@@ -93,7 +94,12 @@ describe('DAO', () => {
       beforeEach(async () => {
         transaction = await dao
           .connect(investor1)
-          .createProposal('Proposal 1', ether(100), recipient.address)
+          .createProposal(
+            'Proposal 1',
+            'Proposal 1 description',
+            ether(100),
+            recipient.address
+          )
         result = await transaction.wait()
       })
 
@@ -109,18 +115,38 @@ describe('DAO', () => {
         expect(proposal.recipient).to.equal(recipient.address)
       })
 
+      it('has a proprosal description', async () => {
+        const proposal = await dao.proposals(1)
+
+        expect(proposal.description).to.equal('Proposal 1 descriptions')
+      })
+
       it('emits a propose event', async () => {
         await expect(transaction)
           .to.emit(dao, 'Propose')
           .withArgs(1, ether(100), recipient.address, investor1.address)
       })
     })
+
     describe('Failure', async () => {
+      it("rejects if description's not provided", async () => {
+        // await expect(
+        //   dao
+        //     .connect(investor1)
+        //     .createProposal('Proposal 1', ether(1000), recipient.address)
+        // ).to.be.reverted
+      })
+
       it('rejects invalid amount', async () => {
         await expect(
           dao
             .connect(investor1)
-            .createProposal('Proposal 1', ether(1000), recipient.address)
+            .createProposal(
+              'Proposal 1',
+              'Proposal 1 description',
+              ether(1000),
+              recipient.address
+            )
         ).to.be.reverted
       })
 
@@ -128,7 +154,12 @@ describe('DAO', () => {
         await expect(
           dao
             .connect(nonDAOuser)
-            .createProposal('Proposal 1', ether(100), recipient.address)
+            .createProposal(
+              'Proposal 1',
+              'Proposal 1 description',
+              ether(100),
+              recipient.address
+            )
         ).to.be.reverted
       })
     })
@@ -140,7 +171,12 @@ describe('DAO', () => {
     beforeEach(async () => {
       transaction = await dao
         .connect(investor1)
-        .createProposal('Proposal 1', ether(100), recipient.address)
+        .createProposal(
+          'Proposal 1',
+          'Proposal 1 description',
+          ether(100),
+          recipient.address
+        )
       result = await transaction.wait()
     })
 
@@ -194,7 +230,12 @@ describe('DAO', () => {
         // Create Proposal
         transaction = await dao
           .connect(investor1)
-          .createProposal('Proposal 1', ether(100), recipient.address)
+          .createProposal(
+            'Proposal 1',
+            'Proposal 1 description',
+            ether(100),
+            recipient.address
+          )
         result = await transaction.wait()
 
         // Vote
@@ -234,11 +275,21 @@ describe('DAO', () => {
           // Create Proposals
           transaction = await dao
             .connect(investor1)
-            .createProposal('Proposal 1', ether(100), recipient.address)
+            .createProposal(
+              'Proposal 1',
+              'Proposal 1 description',
+              ether(100),
+              recipient.address
+            )
           result = await transaction.wait()
           transaction = await dao
             .connect(investor2)
-            .createProposal('Proposal 2', ether(100), recipient.address)
+            .createProposal(
+              'Proposal 2',
+              'Proposal 1 description',
+              ether(100),
+              recipient.address
+            )
           result = await transaction.wait()
 
           // Vote on 1st proposal
@@ -271,7 +322,12 @@ describe('DAO', () => {
           // Create Proposal
           transaction = await dao
             .connect(investor1)
-            .createProposal('Proposal 1', ether(100), recipient.address)
+            .createProposal(
+              'Proposal 1',
+              'Proposal 1 description',
+              ether(100),
+              recipient.address
+            )
           result = await transaction.wait()
 
           // Vote
