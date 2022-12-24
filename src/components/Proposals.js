@@ -6,8 +6,17 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
   const voteHandler = async id => {
     try {
       const signer = await provider.getSigner()
-      const transaction = await dao.connect(signer).vote(id)
+      const transaction = await dao.connect(signer).vote(id, true)
       await transaction.wait()
+      const accounts = await provider.listAccounts()
+
+      console.log('ether address: ', ethers.utils.getAddress(accounts[0]))
+      // const votes = dao.votes[ethers.utils.getAddress(accounts[0])]
+      console.log(ethers.utils.isAddress(ethers.utils.getAddress(accounts[0])))
+      const votes = await dao.votes[ethers.utils.getAddress(accounts[0])]
+      console.log('votes: ', votes)
+      const voted = votes[id].voted
+      console.log('voted: ', voted)
     } catch {
       window.alert('User rejected or transaction reverted')
     }
