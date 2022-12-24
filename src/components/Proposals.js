@@ -1,13 +1,22 @@
+import { useState } from 'react'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { ethers } from 'ethers'
 
 const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
+  const [voted, setVoted] = useState(false)
+
   const voteHandler = async id => {
     try {
       const signer = await provider.getSigner()
-      const transaction = await dao.connect(signer).vote(id)
+      const transaction = await dao.connect(signer).vote(id, true)
       await transaction.wait()
+      const accounts = await provider.listAccounts()
+
+      const proposal = await dao.votes(ethers.utils.getAddress(accounts[0]), id)
+      const voteStatus = proposal.voted
+      setVoted(voteStatus)
+      console.log('voted: ', voteStatus)
     } catch {
       window.alert('User rejected or transaction reverted')
     }
@@ -51,6 +60,7 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{proposal.votes.toString()}</td>
             <td>
+              {console.log('voted from return ', voted)}
               {!proposal.finalized && proposal.votes < quorum && (
                 <Button
                   variant="primary"

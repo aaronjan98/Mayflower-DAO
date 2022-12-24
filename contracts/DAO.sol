@@ -11,7 +11,7 @@ contract DAO {
     uint256 public quorum;
     uint256 public proposalCount;
     mapping(uint256 => Proposal) public proposals;
-    mapping(address => mapping(uint256 => VoteStatus)) votes;
+    mapping(address => mapping(uint256 => VoteStatus)) public votes;
 
     struct VoteStatus {
         bool voted;
