@@ -1,22 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { ethers } from 'ethers'
 
 const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
-  const [voted, setVoted] = useState(false)
+  const [voted, setVoted] = useState(new Set())
+
+  const updateVotedStatus = async () => {
+    const accounts = await provider.listAccounts()
+    const address = ethers.utils.getAddress(accounts[0])
+
+    const voteStatuses = await Promise.all(
+      proposals.map(async proposal => {
+        const id = proposal.id
+        const proposalStatus = await dao.votes(address, id)
+        return proposalStatus.voted
+      })
+    )
+
+    const newVoted = new Set()
+    voteStatuses.forEach((voteStatus, index) => {
+      if (voteStatus === true) {
+        newVoted.add(proposals[index].id)
+      }
+    })
+
+    setVoted(newVoted)
+  }
+
+  useEffect(() => {
+    updateVotedStatus()
+  }, [proposals, provider])
 
   const voteHandler = async id => {
     try {
       const signer = await provider.getSigner()
       const transaction = await dao.connect(signer).vote(id, true)
       await transaction.wait()
-      const accounts = await provider.listAccounts()
-
-      const proposal = await dao.votes(ethers.utils.getAddress(accounts[0]), id)
-      const voteStatus = proposal.voted
-      setVoted(voteStatus)
-      console.log('voted: ', voteStatus)
     } catch {
       window.alert('User rejected or transaction reverted')
     }
@@ -58,18 +78,19 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             <td>{proposal.recipient}</td>
             <td>{ethers.utils.formatEther(proposal.amount)} ETH</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
-            <td>{proposal.votes.toString()}</td>
+            <td>{ethers.utils.commify(proposal.votes)}</td>
             <td>
-              {console.log('voted from return ', voted)}
-              {!proposal.finalized && proposal.votes < quorum && (
-                <Button
-                  variant="primary"
-                  style={{ width: '100%' }}
-                  onClick={() => voteHandler(proposal.id)}
-                >
-                  Vote
-                </Button>
-              )}
+              {!proposal.finalized &&
+                proposal.votes < quorum &&
+                !voted.has(proposal.id) && (
+                  <Button
+                    variant="primary"
+                    style={{ width: '100%' }}
+                    onClick={() => voteHandler(proposal.id)}
+                  >
+                    Vote
+                  </Button>
+                )}
             </td>
             <td>
               {!proposal.finalized && proposal.votes > quorum && (
