@@ -12,20 +12,26 @@ const Proposals = ({
   setIsLoading,
 }) => {
   const [voted, setVoted] = useState(new Set())
-  const [recipientBalance, setRecipientBalance] = useState(null)
+  const [recipientBalance, setRecipientBalance] = useState(new Set())
 
   const retrieveRecipientBalance = async () => {
     // TODO: get recipient address, not current account
-    const accounts = await provider.listAccounts()
-    const accountAddress = ethers.utils.getAddress(accounts[0])
-    // Token balance
-    // const balance = await token.balanceOf(account)
-    // console.log(ethers.utils.formatEther(balance))
-    // Ether balance
-    let balance = await provider.getBalance(accountAddress)
-    balance = ethers.utils.formatEther(balance)
 
-    setRecipientBalance(balance)
+    const recipientBalances = await Promise.all(
+      // Ether balance
+      proposals.map(async proposal => {
+        const recipient = proposal.recipient
+        const balance = await provider.getBalance(recipient)
+        return ethers.utils.formatEther(balance)
+      })
+    )
+
+    let recBalances = new Set()
+    recipientBalances.forEach((balance, index) => {
+      recBalances.add(balance)
+    })
+
+    setRecipientBalance(recBalances)
   }
 
   // Make vote button dissapear once user votes
@@ -101,7 +107,12 @@ const Proposals = ({
             <td>{proposal.id.toString()}</td>
             <td>{proposal.name}</td>
             <td>{proposal.recipient}</td>
-            <td>{recipientBalance}</td>
+            <td>
+              {async () => {
+                const balance = await provider.getBalance(proposal.recipient)
+                return ethers.utils.formatEther(balance)
+              }}
+            </td>
             <td>{ethers.utils.formatEther(proposal.amount)} ETH</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{ethers.utils.commify(proposal.votes)}</td>
