@@ -12,12 +12,10 @@ const Proposals = ({
   setIsLoading,
 }) => {
   const [voted, setVoted] = useState(new Set())
-  const [recipientBalance, setRecipientBalance] = useState(new Set())
+  const [recipientBalances, setRecipientBalances] = useState([])
 
-  const retrieveRecipientBalance = async () => {
-    // TODO: get recipient address, not current account
-
-    const recipientBalances = await Promise.all(
+  const retrieveRecipientBalances = async () => {
+    const balances = await Promise.all(
       // Ether balance
       proposals.map(async proposal => {
         const recipient = proposal.recipient
@@ -26,12 +24,18 @@ const Proposals = ({
       })
     )
 
-    let recBalances = new Set()
-    recipientBalances.forEach((balance, index) => {
-      recBalances.add(balance)
+    let recBalances = []
+    balances.forEach((balance, index) => {
+      recBalances.push({ index, balance })
     })
+    setRecipientBalances(recBalances)
+  }
 
-    setRecipientBalance(recBalances)
+  const getBalance = index => {
+    const item = recipientBalances.find(item => {
+      return item.index === index
+    })
+    return item ? item.balance : null
   }
 
   // Make vote button dissapear once user votes
@@ -58,7 +62,7 @@ const Proposals = ({
   }
 
   useEffect(() => {
-    retrieveRecipientBalance()
+    retrieveRecipientBalances()
     updateVotedStatus()
   }, [proposals, provider])
 
@@ -107,12 +111,7 @@ const Proposals = ({
             <td>{proposal.id.toString()}</td>
             <td>{proposal.name}</td>
             <td>{proposal.recipient}</td>
-            <td>
-              {async () => {
-                const balance = await provider.getBalance(proposal.recipient)
-                return ethers.utils.formatEther(balance)
-              }}
-            </td>
+            <td>{getBalance(index)} ETH</td>
             <td>{ethers.utils.formatEther(proposal.amount)} ETH</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{ethers.utils.commify(proposal.votes)}</td>
