@@ -3,9 +3,32 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button'
 import { ethers } from 'ethers'
 
-const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
+const Proposals = ({
+  provider,
+  dao,
+  token,
+  proposals,
+  quorum,
+  setIsLoading,
+}) => {
   const [voted, setVoted] = useState(new Set())
+  const [recipientBalance, setRecipientBalance] = useState(null)
 
+  const retrieveRecipientBalance = async () => {
+    // TODO: get recipient address, not current account
+    const accounts = await provider.listAccounts()
+    const accountAddress = ethers.utils.getAddress(accounts[0])
+    // Token balance
+    // const balance = await token.balanceOf(account)
+    // console.log(ethers.utils.formatEther(balance))
+    // Ether balance
+    let balance = await provider.getBalance(accountAddress)
+    balance = ethers.utils.formatEther(balance)
+
+    setRecipientBalance(balance)
+  }
+
+  // Make vote button dissapear once user votes
   const updateVotedStatus = async () => {
     const accounts = await provider.listAccounts()
     const address = ethers.utils.getAddress(accounts[0])
@@ -29,6 +52,7 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
   }
 
   useEffect(() => {
+    retrieveRecipientBalance()
     updateVotedStatus()
   }, [proposals, provider])
 
@@ -63,6 +87,7 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
           <th>#</th>
           <th>Proposal Name</th>
           <th>Recipient Address</th>
+          <th>Recipient Balance</th>
           <th>Amount</th>
           <th>Status</th>
           <th>Total Votes</th>
@@ -76,6 +101,7 @@ const Proposals = ({ provider, dao, proposals, quorum, setIsLoading }) => {
             <td>{proposal.id.toString()}</td>
             <td>{proposal.name}</td>
             <td>{proposal.recipient}</td>
+            <td>{recipientBalance}</td>
             <td>{ethers.utils.formatEther(proposal.amount)} ETH</td>
             <td>{proposal.finalized ? 'Approved' : 'In Progress'}</td>
             <td>{ethers.utils.commify(proposal.votes)}</td>

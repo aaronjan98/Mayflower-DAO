@@ -11,6 +11,7 @@ import Loading from './Loading'
 
 // ABIs: Import your contract ABIs here
 import DAO_ABI from '../abis/DAO.json'
+import TOKEN_ABI from '../abis/Token.json'
 
 // Config: Import your network config here
 import config from '../config.json'
@@ -18,6 +19,7 @@ import config from '../config.json'
 function App() {
   const [provider, setProvider] = useState(null)
   const [dao, setDao] = useState(null)
+  const [token, setToken] = useState(null)
   const [treasuryBalance, setTreasuryBalance] = useState(0)
 
   const [account, setAccount] = useState(null)
@@ -41,6 +43,13 @@ function App() {
       provider
     )
     setDao(dao)
+
+    const token = new ethers.Contract(
+      config[chainId].token.address,
+      TOKEN_ABI,
+      provider
+    )
+    setToken(token)
 
     // Fetch treasury balance
     let treasuryBalance = await provider.getBalance(dao.address)
@@ -109,6 +118,7 @@ function App() {
           <Proposals
             provider={provider}
             dao={dao}
+            token={token}
             proposals={proposals}
             quorum={quorum}
             setIsLoading={setIsLoading}
