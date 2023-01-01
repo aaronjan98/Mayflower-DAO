@@ -37,7 +37,7 @@ async function main() {
   )
   console.log(`Token fetched: ${token.address}\n`)
 
-  // Send tokens to investors - each one gets 20%
+  // Send tokens to investors
   transaction = await token.transfer(investor1.address, tokens(200000))
   await transaction.wait()
 

@@ -58,11 +58,6 @@ describe('DAO', () => {
       .transfer(investor4.address, tokens(200000))
     await transaction.wait()
 
-    transaction = await token
-      .connect(deployer)
-      .transfer(investor5.address, tokens(200000))
-    await transaction.wait()
-
     // Deploy DAO
     // Set Quorum to > 50% of token total supply
     // 500k tokens + 1 wei, i.e., 500000000000000000000001
@@ -71,6 +66,9 @@ describe('DAO', () => {
 
     // Funder sends 100 Ether to DAO treasury for Governance
     await funder.sendTransaction({ to: dao.address, value: ether(100) })
+    // Funder sends 200k tokens to DAO
+    transaction = await token.transfer(dao.address, tokens(200000))
+    await transaction.wait()
   })
 
   describe('Deployment', () => {
@@ -98,7 +96,8 @@ describe('DAO', () => {
             'Proposal 1',
             'Proposal 1 description',
             ether(100),
-            recipient.address
+            recipient.address,
+            dao.address
           )
         result = await transaction.wait()
       })
@@ -145,7 +144,8 @@ describe('DAO', () => {
               'Proposal 1',
               'Proposal 1 description',
               ether(1000),
-              recipient.address
+              recipient.address,
+              dao.address
             )
         ).to.be.reverted
       })
@@ -158,7 +158,8 @@ describe('DAO', () => {
               'Proposal 1',
               'Proposal 1 description',
               ether(100),
-              recipient.address
+              recipient.address,
+              dao.address
             )
         ).to.be.reverted
       })
@@ -175,7 +176,8 @@ describe('DAO', () => {
           'Proposal 1',
           'Proposal 1 description',
           ether(100),
-          recipient.address
+          recipient.address,
+          dao.address
         )
       result = await transaction.wait()
     })
@@ -234,7 +236,8 @@ describe('DAO', () => {
             'Proposal 1',
             'Proposal 1 description',
             ether(100),
-            recipient.address
+            recipient.address,
+            dao.address
           )
         result = await transaction.wait()
 
@@ -279,7 +282,8 @@ describe('DAO', () => {
               'Proposal 1',
               'Proposal 1 description',
               ether(100),
-              recipient.address
+              recipient.address,
+              dao.address
             )
           result = await transaction.wait()
           transaction = await dao
@@ -288,7 +292,8 @@ describe('DAO', () => {
               'Proposal 2',
               'Proposal 1 description',
               ether(100),
-              recipient.address
+              recipient.address,
+              dao.address
             )
           result = await transaction.wait()
 
@@ -326,7 +331,8 @@ describe('DAO', () => {
               'Proposal 1',
               'Proposal 1 description',
               ether(100),
-              recipient.address
+              recipient.address,
+              dao.address
             )
           result = await transaction.wait()
 

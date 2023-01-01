@@ -2,12 +2,14 @@
 pragma solidity ^0.8.0;
 
 import 'hardhat/console.sol';
-import './openzeppelin-contracts/token/ERC20/ERC20.sol';
-import './openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol';
+import './Token.sol';
+
+// import './openzeppelin-contracts/token/ERC20/ERC20.sol';
+// import './openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract DAO {
-    using SafeERC20 for ERC20;
-    ERC20 public token;
+    // using SafeERC20 for ERC20;
+    Token public token;
 
     address owner;
     uint256 public quorum;
@@ -34,7 +36,7 @@ contract DAO {
     event Vote(uint256 id, address investor);
     event Finalize(uint256 id);
 
-    constructor(ERC20 _token, uint256 _quorum) {
+    constructor(Token _token, uint256 _quorum) {
         owner = msg.sender;
         token = _token;
         quorum = _quorum;
@@ -55,7 +57,7 @@ contract DAO {
                 'DAO must have enough ether for the proposal'
             );
         } else {
-            ERC20 paymentToken = ERC20(_payment);
+            Token paymentToken = Token(_payment);
             require(
                 paymentToken.balanceOf(address(this)) >= _amount,
                 'DAO must have enough tokens for the proposal'
