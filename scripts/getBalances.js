@@ -44,6 +44,24 @@ async function main() {
       )}`
     )
   }
+
+  console.log('₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪')
+
+  // print DAO balance
+
+  daoBalance = await token.balanceOf(ethers.utils.getAddress(dao.address))
+  console.log(
+    '₪\n' +
+      '₪ ' +
+      `DAO Token Balance: ${await ethers.utils.formatEther(daoBalance)}`
+  )
+
+  // Fetch treasury balance
+  let treasuryBalance = await ethers.provider.getBalance(dao.address)
+  treasuryBalance = ethers.utils.formatUnits(treasuryBalance, 18)
+  console.log('₪\n' + '₪ ' + 'DAO Eth Balance: ', treasuryBalance)
+
+  console.log('₪\n' + '₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪₪')
 }
 
 main().catch(error => {

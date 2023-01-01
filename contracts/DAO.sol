@@ -2,12 +2,14 @@
 pragma solidity ^0.8.0;
 
 import 'hardhat/console.sol';
-import './Token.sol';
+import './openzeppelin-contracts/token/ERC20/ERC20.sol';
+import './openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract DAO {
-    address owner;
-    Token public token;
+    using SafeERC20 for ERC20;
+    ERC20 public token;
 
+    address owner;
     uint256 public quorum;
     uint256 public proposalCount;
     mapping(uint256 => Proposal) public proposals;
@@ -32,7 +34,7 @@ contract DAO {
     event Vote(uint256 id, address investor);
     event Finalize(uint256 id);
 
-    constructor(Token _token, uint256 _quorum) {
+    constructor(ERC20 _token, uint256 _quorum) {
         owner = msg.sender;
         token = _token;
         quorum = _quorum;
@@ -45,16 +47,30 @@ contract DAO {
         _;
     }
 
+    modifier enoughFunds(uint256 _amount, address payable _payment) {
+        // Check if the DAO has enough ether or token balance
+        if (_payment == address(this)) {
+            require(
+                address(this).balance >= _amount,
+                'DAO must have enough ether for the proposal'
+            );
+        } else {
+            ERC20 paymentToken = ERC20(_payment);
+            require(
+                paymentToken.balanceOf(address(this)) >= _amount,
+                'DAO must have enough tokens for the proposal'
+            );
+        }
+        _;
+    }
+
     function createProposal(
         string memory _name,
         string memory _description,
         uint256 _amount,
-        address payable _recipient
-    ) external onlyInvestor {
-        require(
-            address(this).balance >= _amount,
-            'DAO must have enough funds for the proposal'
-        );
+        address payable _recipient,
+        address payable _payment
+    ) external onlyInvestor enoughFunds(_amount, _payment) {
         require(
             keccak256(abi.encodePacked(_description)) !=
                 keccak256(abi.encodePacked('')),
