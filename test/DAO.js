@@ -76,6 +76,10 @@ describe('DAO', () => {
       expect(await ethers.provider.getBalance(dao.address)).to.equal(ether(100))
     })
 
+    it('sends tokens to the DAO treausry', async () => {
+      expect(await token.balanceOf(dao.address)).to.equal(tokens(200000))
+    })
+
     it('returns token address', async () => {
       expect(await dao.token()).to.equal(token.address)
     })
