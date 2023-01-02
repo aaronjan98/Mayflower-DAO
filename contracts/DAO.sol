@@ -4,11 +4,7 @@ pragma solidity ^0.8.0;
 import 'hardhat/console.sol';
 import './Token.sol';
 
-// import './openzeppelin-contracts/token/ERC20/ERC20.sol';
-// import './openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol';
-
 contract DAO {
-    // using SafeERC20 for ERC20;
     Token public token;
 
     address owner;
@@ -27,12 +23,19 @@ contract DAO {
         string name;
         string description;
         uint256 amount;
+        address payable payment;
         address payable recipient;
         int256 votes;
         bool finalized;
     }
 
-    event Propose(uint id, uint256 amount, address recipient, address creator);
+    event Propose(
+        uint id,
+        uint256 amount,
+        address payment,
+        address recipient,
+        address creator
+    );
     event Vote(uint256 id, address investor);
     event Finalize(uint256 id);
 
@@ -50,28 +53,35 @@ contract DAO {
     }
 
     modifier enoughFunds(uint256 _amount, address payable _payment) {
-        // Check if the DAO has enough ether or token balance
+        _checkBalance(_amount, _payment);
+        _;
+    }
+
+    // Check if the DAO has enough ether or token balance
+    function _checkBalance(
+        uint256 _amount,
+        address payable _payment
+    ) private view {
         if (_payment == address(this)) {
             require(
                 address(this).balance >= _amount,
-                'DAO must have enough ether for the proposal'
+                'DAO must have enough ether for the proposal action'
             );
         } else {
             Token paymentToken = Token(_payment);
             require(
                 paymentToken.balanceOf(address(this)) >= _amount,
-                'DAO must have enough tokens for the proposal'
+                'DAO must have enough tokens for the proposal action'
             );
         }
-        _;
     }
 
     function createProposal(
         string memory _name,
         string memory _description,
         uint256 _amount,
-        address payable _recipient,
-        address payable _payment
+        address payable _payment,
+        address payable _recipient
     ) external onlyInvestor enoughFunds(_amount, _payment) {
         require(
             keccak256(abi.encodePacked(_description)) !=
@@ -87,12 +97,13 @@ contract DAO {
             _name,
             _description,
             _amount,
+            _payment,
             _recipient,
             0,
             false
         );
 
-        emit Propose(proposalCount, _amount, _recipient, msg.sender);
+        emit Propose(proposalCount, _amount, _payment, _recipient, msg.sender);
     }
 
     // Vote on Proposal
@@ -132,14 +143,20 @@ contract DAO {
             'must reach quorum to finalize proposal'
         );
 
-        require(
-            address(this).balance >= proposal.amount,
-            'contract must have enough ether'
-        );
+        _checkBalance(proposal.amount, proposal.payment);
 
         // Transfer funds
-        (bool sent, ) = proposal.recipient.call{ value: proposal.amount }('');
-        require(sent);
+        if (proposal.payment == address(this)) {
+            (bool sent, ) = proposal.recipient.call{ value: proposal.amount }(
+                ''
+            );
+            require(sent);
+        } else {
+            Token(proposal.payment).safeTransfer(
+                proposal.recipient,
+                proposal.amount
+            );
+        }
 
         // Emit event
         emit Finalize(_id);
