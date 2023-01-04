@@ -3,8 +3,10 @@ pragma solidity ^0.8.0;
 
 import 'hardhat/console.sol';
 import './Token.sol';
+import './openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol';
 
 contract DAO {
+    using SafeERC20 for Token;
     Token public token;
 
     address owner;
@@ -152,10 +154,8 @@ contract DAO {
             );
             require(sent);
         } else {
-            Token(proposal.payment).safeTransfer(
-                proposal.recipient,
-                proposal.amount
-            );
+            Token transferToken = Token(proposal.payment);
+            transferToken.safeTransfer(proposal.recipient, proposal.amount);
         }
 
         // Emit event
