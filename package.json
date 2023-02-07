@@ -21,7 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "ganache": "ganache-cli -p 3334 -a 20 -e 10000 -m 'web excess blood script melody grape vast economy believe garbage mango inner'"
+    "ganache": "ganache-cli --chain.chainId 31339 -p 3334 -a 20 -e 10000 -m 'web excess blood script melody grape vast economy believe garbage mango inner'"
   },
   "author": "aaronjanovitch@gmail.com",
   "license": "MIT",

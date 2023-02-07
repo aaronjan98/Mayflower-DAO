@@ -1,17 +1,11 @@
 import Navbar from 'react-bootstrap/Navbar'
 
-import logo from '../logo.png'
+import { ReactComponent as Logo } from '../logo.svg'
 
 const Navigation = ({ account }) => {
   return (
     <Navbar className="my-3">
-      <img
-        alt="logo"
-        src={logo}
-        width="40"
-        height="40"
-        className="d-inline-block align-top mx-3"
-      />
+      <Logo alt="logo" className="d-inline-block align-top mx-3" />
       <Navbar.Brand href="#">Mayflower DAO</Navbar.Brand>
       <Navbar.Collapse className="justify-content-end">
         <Navbar.Text>{account}</Navbar.Text>
