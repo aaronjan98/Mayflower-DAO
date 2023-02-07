@@ -1,5 +1,5 @@
 {
-  "name": "dao",
+  "name": "Mayflower DAO",
   "version": "1.0.0",
   "description": "Purchase tokens to join and make proposals on behalf of the DAO",
   "dependencies": {
