@@ -22,6 +22,7 @@ function App() {
   const [token, setToken] = useState(null)
   const [treasuryBalance, setTreasuryBalance] = useState(0)
 
+  const [chainId, setChainId] = useState(null)
   const [account, setAccount] = useState(null)
 
   const [proposals, setProposals] = useState(null)
@@ -35,6 +36,27 @@ function App() {
     setProvider(provider)
 
     const { chainId } = await provider.getNetwork()
+    setChainId(chainId)
+
+    // Reload page when network changes
+    window.ethereum.on('chainChanged', async () => {
+      window.location.reload()
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+
+      const account = ethers.utils.getAddress(accounts[0])
+      setAccount(account)
+    })
+
+    // Fetch current account from Metamask when changed
+    window.ethereum.on('accountsChanged', async () => {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      })
+      const account = ethers.utils.getAddress(accounts[0])
+      setAccount(account)
+    })
 
     // Initiate contracts
     const dao = new ethers.Contract(
@@ -88,7 +110,7 @@ function App() {
 
   return (
     <Container>
-      <Navigation account={account} />
+      <Navigation account={account} setAccount={setAccount} chainId={chainId} />
 
       <h1 className="my-4 text-center">Welcome to our DAO!</h1>
 
