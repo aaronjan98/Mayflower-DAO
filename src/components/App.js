@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Container } from 'react-bootstrap'
+import { Container, Card } from 'react-bootstrap'
 import { ethers } from 'ethers'
 import { format, bignumber } from 'mathjs'
 
@@ -115,7 +115,14 @@ function App() {
       <h1 className="my-4 text-center">Welcome to our DAO!</h1>
 
       {isLoading ? (
-        <Loading />
+        <Card style={{ width: '450px' }} className="mx-auto px-4">
+          <p
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: '300px' }}
+          >
+            Please connect MetaMask wallet.
+          </p>
+        </Card>
       ) : (
         <>
           <Create provider={provider} dao={dao} setIsLoading={setIsLoading} />
