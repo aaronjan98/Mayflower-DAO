@@ -16,10 +16,13 @@
 
 ## Links
 
-- 🏠 [Homepage](https://github.com/aaronjan98/Mayflower-DAO)
 - ✨ [Live Site](https://gnfc6-qaaaa-aaaad-qe22a-cai.ic.fleek.co/)
 - [Token Contract on Goerli](https://goerli.etherscan.io/address/0xA59441900763bE3c7aF1B47f7106D2372ddc796C)
 - [DAO Contract on Goerli](https://goerli.etherscan.io/address/0xf92f381C155089422f0775f474fBaA2413D376e7)
+
+## Note
+
+- To create and vote on proposals you need to be an investor by custodying MAY tokens. Please reach out to `aaronjanovitch@gmail.com` for your request.
 
 ## Install
 
