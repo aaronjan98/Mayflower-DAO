@@ -8,6 +8,7 @@ import Navigation from './Navigation'
 import Create from './Create'
 import Proposals from './Proposals'
 import Loading from './Loading'
+import NotificationBanner from './NotificationBanner'
 
 // ABIs: Import your contract ABIs here
 import DAO_ABI from '../abis/DAO.json'
@@ -110,6 +111,8 @@ function App() {
 
   return (
     <Container>
+      <NotificationBanner />
+
       <Navigation account={account} setAccount={setAccount} chainId={chainId} />
 
       <h1 className="my-4 text-center">Welcome to our DAO!</h1>
